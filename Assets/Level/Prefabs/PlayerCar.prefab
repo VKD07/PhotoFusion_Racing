@@ -4247,9 +4247,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f646c394d5754d05956a47111fa2e749, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  motorForce: 1000
+  motorForce: 2000
   breakForce: 3000
-  maxSteerAngle: 30
+  maxSteerAngle: 40
   frontLeftWheelCollider: {fileID: 5132791148906642407}
   frontRightWheelCollider: {fileID: 5559843272041094225}
   rearLeftWheelCollider: {fileID: 1962030309194466473}

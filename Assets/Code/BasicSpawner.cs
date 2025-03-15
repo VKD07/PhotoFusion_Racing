@@ -13,6 +13,7 @@ namespace Code
 {
     public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     {
+        [FormerlySerializedAs("_spawnPos")] [SerializeField] private Transform _spawnTransform;
         [SerializeField] private NetworkPrefabRef _playerPrefab;
         private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
         private NetworkRunner _networkRunner;
@@ -33,11 +34,11 @@ namespace Code
         {
             if (runner.IsServer)
             {
-                Vector3 spawnPosition = new Vector3(joinOrder * 10, 1, 0);
+                Vector3 spawnPosition = new Vector3(joinOrder + _spawnTransform.position.x, _spawnTransform.position.y, _spawnTransform.position.z);
                 joinOrder++;
 
                 _networkPlayerObject =
-                    runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
+                    runner.Spawn(_playerPrefab, spawnPosition, _spawnTransform.rotation, player);
            
                 _spawnedCharacters.Add(player, _networkPlayerObject);
             } 

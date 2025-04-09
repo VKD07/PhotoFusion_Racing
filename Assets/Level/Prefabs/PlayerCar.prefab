@@ -4258,6 +4258,7 @@ MonoBehaviour:
   frontRightWheeTransform: {fileID: 3583936536550296854}
   rearLeftWheelTransform: {fileID: 4680196025166625520}
   rearRightWheelTransform: {fileID: 6406372898553286343}
+  _messages: {fileID: 0}
 --- !u!114 &7634339657875256272
 MonoBehaviour:
   m_ObjectHideFlags: 0

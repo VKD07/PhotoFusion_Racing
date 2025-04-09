@@ -55,7 +55,6 @@ MonoBehaviour:
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 3038862209331291538}
-  - {fileID: 7752785397617876157}
   ForceRemoteRenderTimeframe: 0
 --- !u!143 &1593878254930746632
 CharacterController:
@@ -113,6 +112,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f65bcebaf5f2d5740aeb066594cb67e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerControls: {fileID: 0}
+  actionMapName: Player
+  movement: Movement
+  rotation: Rotation
+  jump: Jump
+  sprint: Sprint
 --- !u!1 &5678607984663807660
 GameObject:
   m_ObjectHideFlags: 0

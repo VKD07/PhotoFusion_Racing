@@ -1,7 +1,9 @@
 ﻿using System;
 using Code;
 using Fusion;
+using TMPro;
 using Unity.Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CarController : NetworkBehaviour
@@ -30,6 +32,8 @@ public class CarController : NetworkBehaviour
     [SerializeField] private Transform frontRightWheeTransform;
     [SerializeField] private Transform rearLeftWheelTransform;
     [SerializeField] private Transform rearRightWheelTransform;
+
+    public NetworkObject PlayerNetworkObject => Object;
 
     private void Awake()
     {
@@ -102,10 +106,51 @@ public class CarController : NetworkBehaviour
     private void UpdateSingleWheel(WheelCollider wheelCollider, Transform wheelTransform)
     {
         Vector3 pos;
-        Quaternion rot
-            ;
+        Quaternion rot;
         wheelCollider.GetWorldPose(out pos, out rot);
         wheelTransform.rotation = rot;
         wheelTransform.position = pos;
+    }
+
+    [SerializeField] private TextMeshProUGUI _messages;
+
+    private void Update()
+    {
+        if (Object.HasInputAuthority && Input.GetKeyDown(KeyCode.R))
+        {
+            RPC_SendMessage("Hey Mate!");
+        }
+    }
+    
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    public void RPC_SendMessage(string message, RpcInfo info = default)
+    {
+        RPC_RelayMessage(message, info.Source);
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All, HostMode = RpcHostMode.SourceIsServer)]
+    public void RPC_RelayMessage(string message, PlayerRef messageSource)
+    {
+        if (_messages == null)
+            _messages = FindObjectOfType<TextMeshProUGUI>();
+
+        if (messageSource == Runner.LocalPlayer)
+        {
+            message = $"You said: {message}\n";
+        }
+        else
+        {
+            message = $"Some other player said: {message}\n";
+        }
+
+        _messages.text += message;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.GetComponent<Lap>() != null && Object.HasStateAuthority)
+        {
+            RPC_SendMessage("Hey Mate!");
+        }
     }
 }

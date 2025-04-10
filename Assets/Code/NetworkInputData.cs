@@ -10,7 +10,7 @@ namespace Code
         public float mouseYRotation;
         public float currentSpeed;
         
-        
+        public Vector3 holdPosition;
         
         public float horizontal;
         public float vertical;

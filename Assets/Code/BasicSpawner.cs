@@ -19,7 +19,7 @@ namespace Code
         [SerializeField] private PlayerInputHandler _playerInputHandler;
         private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
         private NetworkRunner _networkRunner;
-        
+
         private bool _spaceButton;
         private bool _interactButton;
         private NetworkObject _networkPlayerObject;
@@ -136,6 +136,11 @@ namespace Code
             _data.mouseXRotation = _playerInputHandler.RotationInput.x * _mouseSensitivity;
             _data.mouseYRotation = _playerInputHandler.RotationInput.y * _mouseSensitivity;
 
+            if (LocalInputSender.Local != null)
+            {
+                _data.holdPosition = LocalInputSender.Local.HoldPosition;
+            }
+            
             input.Set(_data);
         }
 

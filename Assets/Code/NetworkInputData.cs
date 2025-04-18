@@ -9,13 +9,16 @@ namespace Code
         public float mouseXRotation;
         public float mouseYRotation;
         public float currentSpeed;
+        public float pupilVerticalPitch;
         
         public Vector3 holdPosition;
+        public Quaternion holdRotation;
         
         public float horizontal;
         public float vertical;
         public const byte SPACEBUTTON = 1;
         public const byte INTERACTBUTTON = 2;
+        public const byte DROPBUTTON = 3;
 
         public NetworkButtons buttons;
     }

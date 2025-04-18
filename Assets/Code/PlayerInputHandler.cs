@@ -20,7 +20,7 @@ namespace Code
         [SerializeField] private string rotation = "Rotation";
         [SerializeField] private string jump = "Jump";
         [SerializeField] private string sprint = "Sprint";
-
+        public float AccumulatedPitch;
         private InputAction movementAction;
         private InputAction rotationAction;
         private InputAction jumpAction;

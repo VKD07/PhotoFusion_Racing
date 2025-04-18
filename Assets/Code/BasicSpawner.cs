@@ -17,13 +17,16 @@ namespace Code
         [SerializeField] private Transform _spawnTransform;
         [SerializeField] private NetworkPrefabRef _playerPrefab;
         [SerializeField] private PlayerInputHandler _playerInputHandler;
+        public float AccumulatedPitch { get; set; }
         private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
         private NetworkRunner _networkRunner;
 
         private bool _spaceButton;
         private bool _interactButton;
+        private bool _dropItemButton;
         private NetworkObject _networkPlayerObject;
         private int _joinOrder;
+        private float _accumulatedPitch;
 
         [Header("Movement Speeds")] [SerializeField]
         private float _walkSpeed = 3f;
@@ -49,14 +52,15 @@ namespace Code
             if (runner.IsServer)
             {
                 // Vector3 spawnPosition = new Vector3((player.RawEncoded % runner.Config.Simulation.PlayerCount) * 3, 1, 0);
-                Vector3 spawnPosition = new Vector3(_spawnTransform.position.x + _joinOrder, _spawnTransform.position.y, _spawnTransform.position.z);
+                Vector3 spawnPosition = new Vector3(_spawnTransform.position.x + _joinOrder, _spawnTransform.position.y,
+                    _spawnTransform.position.z);
                 _joinOrder++;
                 _networkPlayerObject = runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
 
                 _spawnedCharacters.Add(player, _networkPlayerObject);
             }
         }
-        
+
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
         {
             if (_spawnedCharacters.TryGetValue(player, out NetworkObject networkObject))
@@ -100,6 +104,7 @@ namespace Code
         {
             _spaceButton = _spaceButton || Input.GetKey(KeyCode.Space);
             _interactButton = _interactButton || Input.GetKeyDown(KeyCode.E);
+            _dropItemButton = _dropItemButton || Input.GetKeyDown(KeyCode.G);
         }
 
         public void OnInput(NetworkRunner runner, NetworkInput input)
@@ -127,20 +132,32 @@ namespace Code
             // _currentMovement.x = worldDirection.x * CurrentSpeed;
             // _currentMovement.z = worldDirection.z * CurrentSpeed;
             // _data.direction = _currentMovement;
-            
+
             _data.buttons.Set(NetworkInputData.INTERACTBUTTON, _interactButton);
             _interactButton = false;
+            
+            _data.buttons.Set(NetworkInputData.DROPBUTTON, _dropItemButton);
+            _dropItemButton = false;
 
             _data.direction = new Vector3(_playerInputHandler.MovementInput.x, 0, _playerInputHandler.MovementInput.y);
             _data.currentSpeed = CurrentSpeed;
             _data.mouseXRotation = _playerInputHandler.RotationInput.x * _mouseSensitivity;
             _data.mouseYRotation = _playerInputHandler.RotationInput.y * _mouseSensitivity;
 
-            if (LocalInputSender.Local != null)
+            if (PickUp.Instance != null)
             {
-                _data.holdPosition = LocalInputSender.Local.HoldPosition;
+                _data.holdPosition = PickUp.Instance.HoldPosition();
+                _data.holdRotation = PickUp.Instance.HoldRotation();
             }
-            
+
+            float mouseY = _playerInputHandler.RotationInput.y * _mouseSensitivity;
+
+            _playerInputHandler.AccumulatedPitch = Mathf.Clamp(
+                _playerInputHandler.AccumulatedPitch - mouseY, -60f, 60f
+            );
+
+            _data.pupilVerticalPitch = _playerInputHandler.AccumulatedPitch;
+
             input.Set(_data);
         }
 
@@ -196,9 +213,10 @@ namespace Code
                 GameMode = mode,
                 SessionName = "TestRoom",
                 Scene = scene,
+                
                 SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
+                
             });
-
         }
 
         private void OnGUI()

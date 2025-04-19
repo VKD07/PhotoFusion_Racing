@@ -2,11 +2,14 @@ using System.Collections;
 using Code;
 using Fusion;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class PickableObj : NetworkBehaviour, IInteractable
 {
     [Networked]
     public bool IsKinematic { get; set; }
+
+    private bool isHeld;
 
     private ChangeDetector _changeDetector;
 
@@ -36,7 +39,6 @@ public class PickableObj : NetworkBehaviour, IInteractable
 
     public override void FixedUpdateNetwork()
     {
-        
         if (GetInput<NetworkInputData>(out var input))
         {
             transform.position = input.holdPosition;
@@ -46,6 +48,12 @@ public class PickableObj : NetworkBehaviour, IInteractable
 
     public void AssignAuthority(PlayerRef player)
     {
+        if (isHeld)
+        {
+            return;
+        }
+        
+        isHeld = true;
         var netObj = GetComponent<NetworkObject>();
 
         if (!netObj.HasStateAuthority)
@@ -61,6 +69,7 @@ public class PickableObj : NetworkBehaviour, IInteractable
     public void DropObject()
     {
         NetworkObject netObj = GetComponent<NetworkObject>();
+        isHeld = false;
         IsKinematic = false;
         netObj.RemoveInputAuthority();
     }

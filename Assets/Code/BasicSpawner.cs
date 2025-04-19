@@ -56,7 +56,7 @@ namespace Code
                     _spawnTransform.position.z);
                 _joinOrder++;
                 _networkPlayerObject = runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
-
+                
                 _spawnedCharacters.Add(player, _networkPlayerObject);
             }
         }

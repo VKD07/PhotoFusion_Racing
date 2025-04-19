@@ -182,7 +182,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3169281785489802073}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: EyeLidsVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: 688621787340972399}
   - component: {fileID: 9109826203515961555}
   - component: {fileID: 8081569740444090734}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Eyes1 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -326,7 +326,7 @@ GameObject:
   - component: {fileID: 2106367633443581225}
   - component: {fileID: 4904610362243562608}
   - component: {fileID: 4924489306370490600}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Eyes2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -565,6 +565,7 @@ GameObject:
   - component: {fileID: 4365228720714949316}
   - component: {fileID: 5436828463805939769}
   - component: {fileID: 891195411562833920}
+  - component: {fileID: 3457211630423062755}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -656,6 +657,7 @@ MonoBehaviour:
   - {fileID: 4365228720714949316}
   - {fileID: 5436828463805939769}
   - {fileID: 891195411562833920}
+  - {fileID: 3457211630423062755}
   - {fileID: 6128571218992195010}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &4365228720714949316
@@ -707,8 +709,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _pupilParent: {fileID: 7519162662498445734}
+  eyeVisuals:
+  - {fileID: 5643460453885195215}
+  - {fileID: 4904610362243562608}
+  - {fileID: 3483638058313023863}
+  - {fileID: 9109826203515961555}
   maxOffsetY: 0.056
   verticalLookRange: 80
+--- !u!114 &3457211630423062755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5740499830124667909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ebecffde41f5054391984a82c77e8af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5899745319278475221
 GameObject:
   m_ObjectHideFlags: 0
@@ -839,7 +858,7 @@ GameObject:
   - component: {fileID: 3133952807165802326}
   - component: {fileID: 3483638058313023863}
   - component: {fileID: 299909626571728867}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Eyes1 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -947,7 +966,7 @@ GameObject:
   - component: {fileID: 3975904180970380230}
   - component: {fileID: 5643460453885195215}
   - component: {fileID: 4019192498667291549}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Eyes1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1053,7 +1072,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7519162662498445734}
   - component: {fileID: 6128571218992195010}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: PupilVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}

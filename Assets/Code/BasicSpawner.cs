@@ -17,8 +17,10 @@ namespace Code
         [SerializeField] private Transform _spawnTransform;
         [SerializeField] private NetworkPrefabRef _playerPrefab;
         [SerializeField] private PlayerInputHandler _playerInputHandler;
-        public float AccumulatedPitch { get; set; }
-        private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
+
+        private readonly Dictionary<PlayerRef, NetworkObject> _spawnedCharacters =
+            new Dictionary<PlayerRef, NetworkObject>();
+
         private NetworkRunner _networkRunner;
 
         private bool _spaceButton;
@@ -28,15 +30,16 @@ namespace Code
         private int _joinOrder;
         private float _accumulatedPitch;
 
-        [Header("Movement Speeds")] [SerializeField]
-        private float _walkSpeed = 3f;
-
         [SerializeField] private float _sprintMultiplier = 2f;
         [SerializeField] private float _mouseSensitivity = 0.1f;
 
-        private Vector3 _currentMovement;
+        [Header("Movement Speeds")] [SerializeField]
+        private float _playerWalkSpeed = 3f;
 
-        private float CurrentSpeed => _walkSpeed * (_playerInputHandler.SprintTriggered ? _sprintMultiplier : 1f);
+        private Vector3 _holdingPos;
+        private Quaternion _rotation;
+
+        private float CurrentSpeed => _playerWalkSpeed * (_playerInputHandler.SprintTriggered ? _sprintMultiplier : 1f);
 
         public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player)
         {
@@ -56,9 +59,10 @@ namespace Code
                     _spawnTransform.position.z);
                 _joinOrder++;
                 _networkPlayerObject = runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
-                
+
                 _spawnedCharacters.Add(player, _networkPlayerObject);
             }
+                        
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
@@ -135,7 +139,7 @@ namespace Code
 
             _data.buttons.Set(NetworkInputData.INTERACTBUTTON, _interactButton);
             _interactButton = false;
-            
+
             _data.buttons.Set(NetworkInputData.DROPBUTTON, _dropItemButton);
             _dropItemButton = false;
 
@@ -144,10 +148,10 @@ namespace Code
             _data.mouseXRotation = _playerInputHandler.RotationInput.x * _mouseSensitivity;
             _data.mouseYRotation = _playerInputHandler.RotationInput.y * _mouseSensitivity;
 
-            if (PickUp.Instance != null)
+            if (PlayerHoldingPoint.Instance != null)
             {
-                _data.holdPosition = PickUp.Instance.HoldPosition();
-                _data.holdRotation = PickUp.Instance.HoldRotation();
+                _data.holdPosition = PlayerHoldingPoint.Instance.HoldingPointTransform.position;
+                _data.holdRotation = PlayerHoldingPoint.Instance.HoldingPointTransform.rotation;
             }
 
             float mouseY = _playerInputHandler.RotationInput.y * _mouseSensitivity;
@@ -213,9 +217,8 @@ namespace Code
                 GameMode = mode,
                 SessionName = "TestRoom",
                 Scene = scene,
-                
+
                 SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
-                
             });
         }
 

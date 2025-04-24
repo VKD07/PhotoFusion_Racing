@@ -2,22 +2,44 @@ using System.Collections;
 using Code;
 using Fusion;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
-public class PickableObj : NetworkBehaviour, IInteractable
+public class PickableObj : NetworkBehaviour, INetworkInteractable, IDestructable
 {
-    [Networked]
-    public bool IsKinematic { get; set; }
+    [Networked] public bool IsKinematic { get; set; }
 
     private bool isHeld;
 
     private ChangeDetector _changeDetector;
+    private NetworkObject _networkObject;
+
+
+    public void Interact(NetworkBehaviour networkBehaviour)
+    {
+        PickUpObject(networkBehaviour.Object.InputAuthority);
+        if (networkBehaviour.TryGetComponent(out PlayerInteractionHandler playerInteractionHandler))
+        {
+            playerInteractionHandler.DetectedNetworkObject = _networkObject;
+        }
+    }
+
+    public void UnInteract(NetworkBehaviour networkBehaviour)
+    {
+        DropObject();
+    }
+
+    public void DestroyObject(NetworkBehaviour networkBehaviour)
+    {
+        Destroy(gameObject);
+    }
 
     public override void Spawned()
     {
+        _networkObject = GetComponent<NetworkObject>();
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
     }
-    
+
     public override void Render()
     {
         foreach (var change in _changeDetector.DetectChanges(this))
@@ -30,12 +52,6 @@ public class PickableObj : NetworkBehaviour, IInteractable
             }
         }
     }
-    
-    public void Interact()
-    {
-    }
-    
-    
 
     public override void FixedUpdateNetwork()
     {
@@ -45,37 +61,31 @@ public class PickableObj : NetworkBehaviour, IInteractable
             transform.rotation = input.holdRotation;
         }
     }
+    
 
-    public void AssignAuthority(PlayerRef player)
+    private void PickUpObject(PlayerRef player)
     {
         if (isHeld)
         {
             return;
         }
-        
-        isHeld = true;
-        var netObj = GetComponent<NetworkObject>();
 
-        if (!netObj.HasStateAuthority)
+        isHeld = true;
+
+        if (!_networkObject.HasStateAuthority)
             return;
 
-        if (netObj.InputAuthority != player)
+        if (_networkObject.InputAuthority != player)
         {
             IsKinematic = true;
-            netObj.AssignInputAuthority(player);
+            _networkObject.AssignInputAuthority(player);
         }
     }
 
-    public void DropObject()
+    private void DropObject()
     {
-        NetworkObject netObj = GetComponent<NetworkObject>();
         isHeld = false;
         IsKinematic = false;
-        netObj.RemoveInputAuthority();
-    }
-    
-
-    public void UnInteract()
-    {
+        _networkObject.RemoveInputAuthority();
     }
 }

@@ -559,13 +559,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2149533807961077486}
+  - component: {fileID: 8996672505487764320}
   - component: {fileID: 959308418081459471}
   - component: {fileID: 5430943919950411622}
-  - component: {fileID: 8996672505487764320}
   - component: {fileID: 4365228720714949316}
   - component: {fileID: 5436828463805939769}
   - component: {fileID: 891195411562833920}
   - component: {fileID: 3457211630423062755}
+  - component: {fileID: 6130528020491537600}
+  - component: {fileID: 9084320855460475055}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -591,6 +593,32 @@ Transform:
   - {fileID: 170447260997806747}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8996672505487764320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5740499830124667909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 52257249
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 5430943919950411622}
+  - {fileID: 4365228720714949316}
+  - {fileID: 5436828463805939769}
+  - {fileID: 891195411562833920}
+  - {fileID: 3457211630423062755}
+  - {fileID: 6130528020491537600}
+  - {fileID: 9084320855460475055}
+  - {fileID: 6128571218992195010}
+  ForceRemoteRenderTimeframe: 0
 --- !u!143 &959308418081459471
 CharacterController:
   m_ObjectHideFlags: 0
@@ -636,30 +664,6 @@ MonoBehaviour:
   _upDownLookRange: 40
   _characterController: {fileID: 5436828463805939769}
   _mainCamera: {fileID: 1254383615545338977}
---- !u!114 &8996672505487764320
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5740499830124667909}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 52257249
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 5430943919950411622}
-  - {fileID: 4365228720714949316}
-  - {fileID: 5436828463805939769}
-  - {fileID: 891195411562833920}
-  - {fileID: 3457211630423062755}
-  - {fileID: 6128571218992195010}
-  ForceRemoteRenderTimeframe: 0
 --- !u!114 &4365228720714949316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -672,11 +676,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8f71800d7738494da465a80160e6f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 5740499830124667909}
-  _playerCamera: {fileID: 6891192127285175812}
-  _holdPosition: {fileID: 4087254303482571307}
-  _throwForce: 500
-  _pickUpRange: 5
+  _raycastHandler: {fileID: 6130528020491537600}
 --- !u!114 &5436828463805939769
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -728,6 +728,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ebecffde41f5054391984a82c77e8af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6130528020491537600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5740499830124667909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 771665570ac648746b65d8eebc9a497c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerCamera: {fileID: 170447260997806747}
+  _pickUpRange: 5
+--- !u!114 &9084320855460475055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5740499830124667909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea4de421babb3664cad591aaf3b4afd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _holdTransform: {fileID: 4087254303482571307}
+  Position: {x: 0, y: 0, z: 0}
+  Rotation: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &5899745319278475221
 GameObject:
   m_ObjectHideFlags: 0

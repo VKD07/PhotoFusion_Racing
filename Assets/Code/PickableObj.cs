@@ -5,9 +5,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
-public class PickableObj : NetworkBehaviour, INetworkInteractable, IDestructable
+public abstract class PickableObj : NetworkBehaviour, INetworkInteractable, IHoldable
 {
-    [Networked] public bool IsKinematic { get; set; }
+    [Networked] private bool IsKinematic { get; set; }
 
     private bool isHeld;
 
@@ -17,21 +17,43 @@ public class PickableObj : NetworkBehaviour, INetworkInteractable, IDestructable
 
     public void Interact(NetworkBehaviour networkBehaviour)
     {
-        PickUpObject(networkBehaviour.Object.InputAuthority);
+        if (PlayerHasNoItemOnHand(networkBehaviour))
+        {
+            PickUpObject(networkBehaviour.Object.InputAuthority);
+        }
+    }
+
+    private bool PlayerHasNoItemOnHand(NetworkBehaviour networkBehaviour)
+    {
+        if (_networkObject == null)
+        {
+            return false;
+        }
+
         if (networkBehaviour.TryGetComponent(out PlayerInteractionHandler playerInteractionHandler))
         {
-            playerInteractionHandler.DetectedNetworkObject = _networkObject;
+            if (playerInteractionHandler.DetectedNetworkObjectOnHand == null)
+            {
+                RPC_SendNetworkGameObjectToClient(_networkObject, networkBehaviour);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_SendNetworkGameObjectToClient(NetworkObject networkObject, NetworkBehaviour networkBehaviour)
+    {
+        if (networkBehaviour.TryGetComponent(out PlayerInteractionHandler playerInteractionHandler))
+        {
+            playerInteractionHandler.DetectedNetworkObjectOnHand = networkObject;
         }
     }
 
     public void UnInteract(NetworkBehaviour networkBehaviour)
     {
-        DropObject();
-    }
-
-    public void DestroyObject(NetworkBehaviour networkBehaviour)
-    {
-        Destroy(gameObject);
+        DropObject(networkBehaviour);
     }
 
     public override void Spawned()
@@ -61,7 +83,7 @@ public class PickableObj : NetworkBehaviour, INetworkInteractable, IDestructable
             transform.rotation = input.holdRotation;
         }
     }
-    
+
 
     private void PickUpObject(PlayerRef player)
     {
@@ -82,10 +104,18 @@ public class PickableObj : NetworkBehaviour, INetworkInteractable, IDestructable
         }
     }
 
-    private void DropObject()
+    private void DropObject(NetworkBehaviour networkBehaviour)
     {
         isHeld = false;
         IsKinematic = false;
+
+        if (networkBehaviour.TryGetComponent(out PlayerInteractionHandler playerInteractionHandler))
+        {
+            if (playerInteractionHandler.DetectedNetworkObjectOnHand != null)
+            {
+                playerInteractionHandler.DetectedNetworkObjectOnHand = null;
+            }
+        }
         _networkObject.RemoveInputAuthority();
     }
 }

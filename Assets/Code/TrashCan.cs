@@ -9,7 +9,11 @@ namespace Code
         {
             if (networkBehaviour.TryGetComponent(out PlayerInteractionHandler playerInteractionHandler))
             {
-                if (playerInteractionHandler.DetectedNetworkObject.TryGetComponent(out IDestructable destructable))
+                if (playerInteractionHandler.DetectedNetworkObjectOnHand == null)
+                {
+                    return;
+                }
+                if (playerInteractionHandler.DetectedNetworkObjectOnHand.TryGetComponent(out IDestructable destructable))
                 {
                     destructable.DestroyObject(networkBehaviour);
                 }

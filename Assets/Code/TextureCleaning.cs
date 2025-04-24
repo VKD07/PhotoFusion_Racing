@@ -137,7 +137,6 @@ public class TextureCleaning : NetworkBehaviour
     public void RPC_CleanAt(Vector2 textureCoord)
     {
         ApplyBrush(textureCoord);
-        // RPC_ApplyBrushVisual(textureCoord); // broadcast to clients
     }
     
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]

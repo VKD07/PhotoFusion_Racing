@@ -4,12 +4,7 @@ using UnityEngine;
 
 public class DetectCleaningTexture : NetworkBehaviour
 {
-    private Camera _mainCamera;
-
-    public void Awake()
-    {
-        _mainCamera = Camera.main;
-    }
+    [SerializeField] Camera _mainCamera;
 
     public override void FixedUpdateNetwork()
     {
@@ -25,13 +20,13 @@ public class DetectCleaningTexture : NetworkBehaviour
             }
         }
     }
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_RequestClean(NetworkObject targetObject, Vector2 uv)
     {
         if (targetObject.TryGetComponent(out TextureCleaning textureCleaning))
         {
-            textureCleaning.RPC_CleanFromServer(uv); // ✅ this call happens on the server
+            textureCleaning.RPC_CleanFromServer(uv);
         }
     }
-    
 }

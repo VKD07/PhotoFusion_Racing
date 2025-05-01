@@ -135,10 +135,7 @@ public class TextureCleaning : NetworkBehaviour, ITrackable
                 );
             }
         }
-
         _dirtMaskTexture.Apply();
-        
-   
     }
 
     public float GetDirtAmountPercentage()

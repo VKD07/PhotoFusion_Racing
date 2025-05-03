@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Code
 {
-    public abstract class FloorTrash : MonoBehaviour, IPullable
+    public abstract class FloorTrash : NetworkBehaviour, IPullable
     {
         [SerializeField] private float pullForce = 5f;
         private Rigidbody _rb;

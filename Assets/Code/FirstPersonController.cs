@@ -50,7 +50,8 @@ namespace Code
 
             if (!Object.HasInputAuthority)
             {
-                _mainCamera.gameObject.SetActive(false);
+                _mainCamera.enabled = false;
+                _mainCamera.GetComponent<AudioListener>().enabled = false;
             }
         }
 

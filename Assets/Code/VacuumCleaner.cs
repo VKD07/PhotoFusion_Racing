@@ -1,3 +1,4 @@
+using System;
 using Code;
 using Fusion;
 using UnityEngine;
@@ -9,10 +10,22 @@ public class VacuumCleaner : NetworkBehaviour
     [SerializeField] private float _suckingPointDistance = 2f;
     [SerializeField] private Collider[] _detectedTrash;
     private Vector3 _suckingPointPosition;
-    private IAttachable _currentAttachedObj;
+    private NetworkObject _suckingPointNetworkObject;
+
+    public NetworkObject CurrentAttachedObj;
+
+    public override void Spawned()
+    {
+        _suckingPointNetworkObject = _suckingPointOrigin.GetComponent<NetworkObject>();
+    }
 
     private void Update()
     {
+        if (!HasInputAuthority)
+        {
+            return;
+        }
+
         DetectTrash();
         VacuumObjects();
     }
@@ -26,35 +39,83 @@ public class VacuumCleaner : NetworkBehaviour
 
     private void VacuumObjects()
     {
-        if (Input.GetMouseButton(0) && _currentAttachedObj == null)
+        if (Input.GetMouseButton(0) && CurrentAttachedObj == null)
         {
             for (int i = 0; i < _detectedTrash.Length; i++)
             {
-                if (_detectedTrash[i].TryGetComponent(out IPullable pullable))
+                if (_detectedTrash[i].TryGetComponent(out NetworkObject networkObject))
                 {
-                    float distance =
-                        Vector3.Distance(_suckingPointOrigin.position, _detectedTrash[i].transform.position);
-                    if (distance <= 1f)
+                    if (networkObject == null)
                     {
-                        if (_detectedTrash[i].TryGetComponent(out IAttachable attachable))
-                        {
-                            attachable.AttachTo(_suckingPointOrigin);
-                            _currentAttachedObj = attachable;
-                            return;
-                        }
-                        if (_detectedTrash[i].TryGetComponent(out IDestructable destructable))
-                        {
-                            destructable.DestroyObject(this);
-                        }
+                        return;
                     }
-                    pullable.PullTowards(_suckingPointOrigin.position);
+
+                    if (networkObject.TryGetComponent(out IPullable pullable))
+                    {
+                        float distance =
+                            Vector3.Distance(_suckingPointOrigin.position, networkObject.transform.position);
+                        if (distance <= 1f)
+                        {
+                            if (networkObject.TryGetComponent(out IAttachable attachable))
+                            {
+                                RPC_RequestAttached(networkObject);
+                                CurrentAttachedObj = networkObject;
+                                return;
+                            }
+
+                            if (networkObject.TryGetComponent(out IDestructable destructable))
+                            {
+                                RPC_RequestDestroy(networkObject);
+                                return;
+                            }
+                        }
+
+                        RPC_RequestPullForce(networkObject);
+                    }
                 }
             }
         }
-        else if (Input.GetMouseButtonUp(0) && _currentAttachedObj != null)
+        else if (Input.GetMouseButtonUp(0) && CurrentAttachedObj != null)
         {
-            _currentAttachedObj.DeAttach();
-            _currentAttachedObj = null;
+            RPC_RequestDeattach();
+            CurrentAttachedObj = null;
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestAttached(NetworkObject networkObject)
+    {
+        if (networkObject.TryGetComponent(out IAttachable attachable))
+        {
+            attachable.AttachTo(_suckingPointNetworkObject, this);
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestDestroy(NetworkObject networkObject)
+    {
+        if (networkObject.TryGetComponent(out IDestructable destructable))
+        {
+            destructable.DestroyObject(this);
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestPullForce(NetworkObject networkObject)
+    {
+        if (networkObject.TryGetComponent(out IPullable pullable))
+        {
+            Debug.Log("pulling");
+            pullable.PullTowards(_suckingPointOrigin.position);
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    private void RPC_RequestDeattach()
+    {
+        if (CurrentAttachedObj.TryGetComponent(out IAttachable attachable))
+        {
+            attachable.DeAttach();
         }
     }
 

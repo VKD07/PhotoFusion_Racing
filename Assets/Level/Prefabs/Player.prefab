@@ -324,6 +324,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3405739519997183582}
+  - component: {fileID: 1175286866942064200}
   m_Layer: 0
   m_Name: SuckingPoint
   m_TagString: Untagged
@@ -346,6 +347,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 710652607426785736}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1175286866942064200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1533146354273424831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3066794987
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &1612015637506355243
 GameObject:
   m_ObjectHideFlags: 0
@@ -699,6 +718,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 710652607426785736}
+  - component: {fileID: 7798300481925879192}
   m_Layer: 0
   m_Name: Hands
   m_TagString: Untagged
@@ -723,6 +743,25 @@ Transform:
   - {fileID: 3405739519997183582}
   m_Father: {fileID: 170447260997806747}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7798300481925879192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4785096248846409426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 438539683
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects:
+  - {fileID: 1175286866942064200}
+  NetworkedBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &5740499830124667909
 GameObject:
   m_ObjectHideFlags: 0
@@ -782,7 +821,9 @@ MonoBehaviour:
   SortKey: 52257249
   ObjectInterest: 1
   Flags: 262145
-  NestedObjects: []
+  NestedObjects:
+  - {fileID: 7798300481925879192}
+  - {fileID: 1175286866942064200}
   NetworkedBehaviours:
   - {fileID: 5430943919950411622}
   - {fileID: 4365228720714949316}
@@ -944,7 +985,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46edfa20f76d6f04faf90e86cf1138d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _suckingPointOrigin: {fileID: 3405739519997183582}
+  _suckingPointOrigin: {fileID: 710652607426785736}
   _vacuumRadius: 1.5
   _suckingPointDistance: 1.15
   _detectedTrash: []

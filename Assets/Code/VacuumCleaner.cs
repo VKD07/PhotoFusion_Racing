@@ -45,11 +45,6 @@ public class VacuumCleaner : NetworkBehaviour
             {
                 if (_detectedTrash[i].TryGetComponent(out NetworkObject networkObject))
                 {
-                    if (networkObject == null)
-                    {
-                        return;
-                    }
-
                     if (networkObject.TryGetComponent(out IPullable pullable))
                     {
                         float distance =
@@ -94,6 +89,11 @@ public class VacuumCleaner : NetworkBehaviour
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     private void RPC_RequestDestroy(NetworkObject networkObject)
     {
+        if (networkObject == null)
+        {
+            return;
+        }
+
         if (networkObject.TryGetComponent(out IDestructable destructable))
         {
             destructable.DestroyObject(this);
@@ -105,7 +105,6 @@ public class VacuumCleaner : NetworkBehaviour
     {
         if (networkObject.TryGetComponent(out IPullable pullable))
         {
-            Debug.Log("pulling");
             pullable.PullTowards(_suckingPointOrigin.position);
         }
     }

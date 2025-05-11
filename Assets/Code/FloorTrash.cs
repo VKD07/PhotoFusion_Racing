@@ -19,5 +19,12 @@ namespace Code
             Vector3 forceDir = (pullPoint - transform.position).normalized;
             _rb.AddForce(forceDir * pullForce);
         }
+        
+        //TODO: INetworkDestructable
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_DestroyObject()
+        {
+            gameObject.SetActive(false);
+        }
     }
 }

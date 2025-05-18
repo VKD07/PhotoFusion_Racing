@@ -126,7 +126,6 @@ namespace Code
             //
             // if (Input.GetKey(KeyCode.D))
             //     data.direction += Vector3.right;
-
             // data.vertical = Input.GetAxis("Vertical");
             // data.horizontal = Input.GetAxis("Horizontal");
             // data.buttons.Set(NetworkInputData.SPACEBUTTON, _spaceButton);
@@ -136,7 +135,7 @@ namespace Code
             // _currentMovement.x = worldDirection.x * CurrentSpeed;
             // _currentMovement.z = worldDirection.z * CurrentSpeed;
             // _data.direction = _currentMovement;
-
+            
             _data.buttons.Set(NetworkInputData.INTERACTBUTTON, _interactButton);
             _interactButton = false;
 

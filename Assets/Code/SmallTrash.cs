@@ -1,19 +1,21 @@
-using Code;
 using Fusion;
 using UnityEngine;
 
-public class SmallTrash : FloorTrash, IDestructable
+namespace Code
 {
-    private Collider _collider;
-
-    public void Awake ()
+    public class SmallTrash : FloorTrash, IDestructable
     {
-        _collider = GetComponent<Collider>();
-    }
+        private Collider _collider;
 
-    public void DestroyObject(NetworkBehaviour networkBehaviour)
-    {
-        _collider.enabled = false;
-        Destroy(gameObject);
+        public void Awake ()
+        {
+            _collider = GetComponent<Collider>();
+        }
+
+        public void DestroyObject(NetworkBehaviour networkBehaviour)
+        {
+            _collider.enabled = false;
+            Destroy(gameObject);
+        }
     }
 }

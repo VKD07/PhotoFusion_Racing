@@ -1,81 +1,80 @@
-using Code;
 using Fusion;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody), typeof(Collider))]
-public class BigTrash : FloorTrash, IAttachable
+namespace Code
 {
-    [Networked] private bool IsKinematic { get; set; }
-
-    private ChangeDetector _changeDetector;
-    private Collider _collider;
-    private Transform _target;
-    private VacuumCleaner _vacuumCleaner;
-
-    public override void Spawned()
+    [RequireComponent(typeof(Rigidbody), typeof(Collider))]
+    public class BigTrash : FloorTrash, IAttachable, IThrowable
     {
-        _collider = GetComponent<Collider>();
-        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-    }
+        [Networked] private bool IsKinematic { get; set; }
 
-    public override void FixedUpdateNetwork()
-    {
-        if (_target == null)
+        private IAttachmentProvider _attachmentProvider;
+        private Transform _target;
+
+        private AttachFollower _follower;
+        private KinematicHandler _kinematic;
+        private ImpactDamageHandler _damageHandler;
+
+        private ChangeDetector _changeDetector;
+
+        public override void Spawned()
         {
-            return;
-        }
-
-        if (!IsKinematic)
-        {
-            SetKinematicState(true);
-        }
-
-        Vector3 forward = _target.forward.normalized;
-        float separation = (transform.localScale.z + _target.localScale.z) * 0.5f + 0.1f;
-        transform.position = _target.position + forward * separation;
-        transform.forward = _target.forward;
-    }
-
-    public void AttachTo(NetworkObject attachPoint, NetworkBehaviour playerRef)
-    {
-        _target = attachPoint.transform;
-
-        if (playerRef.TryGetComponent(out VacuumCleaner vacuumCleaner) &&
-            vacuumCleaner.CurrentAttachedObj == null)
-        {
-            _vacuumCleaner = vacuumCleaner;
-            vacuumCleaner.CurrentAttachedObj = Object;
-        }
-    }
-
-    public override void Render()
-    {
-        foreach (var change in _changeDetector.DetectChanges(this))
-        {
-            if (change == nameof(IsKinematic))
+            if (HasStateAuthority)
             {
-                SetKinematicState(IsKinematic);
+                _follower = GetComponent<AttachFollower>();
+                _kinematic = GetComponent<KinematicHandler>();
+                _damageHandler = GetComponent<ImpactDamageHandler>();
+                _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
             }
         }
-    }
 
-    public void DeAttach()
-    {
-        if (_vacuumCleaner != null)
+        public override void Render()
         {
-            _vacuumCleaner.CurrentAttachedObj = null;
-            _vacuumCleaner = null;
+            foreach (var change in _changeDetector.DetectChanges(this))
+            {
+                if (change == nameof(IsKinematic))
+                {
+                    _kinematic.SetKinematic(IsKinematic);
+                }
+            }
         }
 
-        _target = null;
-        SetKinematicState(false);
-        _rb.angularVelocity = Vector3.zero;
-    }
+        public void AttachTo(NetworkObject attachPoint, NetworkBehaviour playerRef)
+        {
+            _target = attachPoint.transform;
+            _follower.SetFollowTarget(_target);
 
-    private void SetKinematicState(bool state)
-    {
-        _rb.isKinematic = state;
-        _collider.enabled = !state;
-        IsKinematic = state;
+            if (playerRef.TryGetComponent(out IAttachmentProvider provider) && provider.CurrentAttachedObj == null)
+            {
+                _attachmentProvider = provider;
+                provider.CurrentAttachedObj = Object;
+            }
+
+            _kinematic.SetKinematic(true);
+            IsKinematic = true;
+        }
+
+        public void DeAttach()
+        {
+            _follower.ClearTarget();
+
+            if (_attachmentProvider != null)
+            {
+                _attachmentProvider.CurrentAttachedObj = null;
+                _attachmentProvider = null;
+            }
+
+            _kinematic.SetKinematic(false);
+            _kinematic.ResetAngularVelocity();
+            IsKinematic = false;
+            _target = null;
+        }
+
+        public void Throw()
+        {
+            DeAttach();
+            _damageHandler.Activate();
+            GetComponent<Rigidbody>().AddForce(transform.forward * 30f, ForceMode.Impulse); // Optional: use a ThrowHandler
+        }
     }
 }

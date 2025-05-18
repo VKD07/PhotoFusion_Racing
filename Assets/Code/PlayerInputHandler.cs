@@ -1,7 +1,6 @@
-using System;
-using Fusion;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Code
 {
@@ -9,35 +8,39 @@ namespace Code
     {
         [Header("Input Action Asset")] 
         [SerializeField]
-        private InputActionAsset playerControls;
+        private InputActionAsset _playerControls;
 
         [Header("Action Map Name Reference")]
-        [SerializeField]
-        private string actionMapName = "Player";
+        [SerializeField] private string _actionMapName = "Player";
 
-        [Header("Action Name Reference")] [SerializeField]
-        private string movement = "Movement";
-        [SerializeField] private string rotation = "Rotation";
-        [SerializeField] private string jump = "Jump";
-        [SerializeField] private string sprint = "Sprint";
+        [FormerlySerializedAs("movement")]
+        [Header("Action Name Reference")] 
+        [SerializeField] private string _movement = "Movement";
+        [SerializeField] private string _rotation = "Rotation";
+        [SerializeField] private string _jump = "Jump";
+        [SerializeField] private string _throw = "Throw";
+        [SerializeField] private string _sprint = "Sprint";
         public float AccumulatedPitch;
-        private InputAction movementAction;
-        private InputAction rotationAction;
-        private InputAction jumpAction;
-        private InputAction sprintAction;
+        private InputAction _movementAction;
+        private InputAction _rotationAction;
+        private InputAction _jumpAction;
+        private InputAction _sprintAction;
+        private InputAction _throwAction;
 
         public Vector2 MovementInput { get; private set; }
         public Vector2 RotationInput { get; private set; }
         public bool JumpTriggered { get; private set; }
         public bool SprintTriggered { get; private set; }
+        public bool ThrowTriggered { get; private set; }
         
 
         private void Awake()
         {
-            InputActionMap mapReference = playerControls.FindActionMap(actionMapName);
+            InputActionMap mapReference = _playerControls.FindActionMap(_actionMapName);
 
-            movementAction = mapReference.FindAction(movement);
-            rotationAction = mapReference.FindAction(rotation);
+            _movementAction = mapReference.FindAction(_movement);
+            _rotationAction = mapReference.FindAction(_rotation);
+            _throwAction = mapReference.FindAction(_throw);
             // jumpAction = mapReference.FindAction(jump);
             //sprintAction = mapReference.FindAction(sprint);
             
@@ -46,27 +49,31 @@ namespace Code
 
         private void SubscribeActionValuesToInputEvents()
         {
-            movementAction.performed += inputInfo => MovementInput = inputInfo.ReadValue<Vector2>();
-            movementAction.canceled += inputInfo => MovementInput = Vector2.zero;
+            _movementAction.performed += inputInfo => MovementInput = inputInfo.ReadValue<Vector2>();
+            _movementAction.canceled += inputInfo => MovementInput = Vector2.zero;
             
-            rotationAction.performed += inputInfo => RotationInput = inputInfo.ReadValue<Vector2>();
-            rotationAction.canceled += inputInfo => RotationInput = Vector2.zero;
+            _rotationAction.performed += inputInfo => RotationInput = inputInfo.ReadValue<Vector2>();
+            _rotationAction.canceled += inputInfo => RotationInput = Vector2.zero;
 
-            // jumpAction.performed += inputInfo => JumpTriggered = true;
-            //jumpAction.canceled += inputInfo => JumpTriggered = false;
+            _throwAction.performed += inputInfo => ThrowTriggered = true;
+            _throwAction.canceled += inputInfo => ThrowTriggered = false;
             
+
+            // _jumpAction.performed += inputInfo => JumpTriggered = true;
+            //jumpAction.canceled += inputInfo => JumpTriggered = false;
+
             //sprintAction.performed += inputInfo => SprintTriggered = true;
             //sprintAction.canceled += inputInfo => SprintTriggered = false;
         }
 
         private void OnEnable()
         {
-            playerControls.FindActionMap(actionMapName).Enable();
+            _playerControls.FindActionMap(_actionMapName).Enable();
         }
 
         private void OnDisable()
         {
-            playerControls.FindActionMap(actionMapName).Disable();
+            _playerControls.FindActionMap(_actionMapName).Disable();
         }
     }
 }

@@ -1,0 +1,36 @@
+using System;
+using Code;
+using Fusion;
+using UnityEngine;
+
+public class DetectCleaningTexture : NetworkBehaviour
+{
+    [SerializeField] Camera _mainCamera;
+
+    public override void FixedUpdateNetwork()
+    {
+        if (GetInput(out NetworkInputData input))
+        {
+            if (HasInputAuthority && input.buttons.IsSet(NetworkInputData.GUNBUTTON))
+            {
+                if (Physics.Raycast(_mainCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
+                {
+                    if (hit.transform.TryGetComponent(out TextureCleaning textureCleaning))
+                    {
+                        Vector2 textureCoord = hit.textureCoord;
+                        RPC_RequestClean(textureCleaning.Object, textureCoord);
+                    }
+                }
+            }
+        }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
+    public void RPC_RequestClean(NetworkObject targetObject, Vector2 uv)
+    {
+        if (targetObject.TryGetComponent(out TextureCleaning textureCleaning))
+        {
+            textureCleaning.RPC_CleanFromServer(uv);
+        }
+    }
+}

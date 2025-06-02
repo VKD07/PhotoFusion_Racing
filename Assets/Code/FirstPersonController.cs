@@ -1,5 +1,4 @@
-﻿using System;
-using Fusion;
+﻿using Fusion;
 using UnityEngine;
 
 namespace Code
@@ -24,7 +23,6 @@ namespace Code
         [SerializeField] private float _upDownLookRange = 80f;
 
         [Header("References")] [SerializeField]
-        // private CharacterController _characterController;
         private NetworkCharacterController _characterController;
 
         [SerializeField] private Camera _mainCamera;

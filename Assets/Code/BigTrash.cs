@@ -19,13 +19,10 @@ namespace Code
 
         public override void Spawned()
         {
-            if (HasStateAuthority)
-            {
-                _follower = GetComponent<AttachFollower>();
-                _kinematic = GetComponent<KinematicHandler>();
-                _damageHandler = GetComponent<ImpactDamageHandler>();
-                _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-            }
+            _follower = GetComponent<AttachFollower>();
+            _damageHandler = GetComponent<ImpactDamageHandler>();
+            _kinematic = GetComponent<KinematicHandler>();
+            _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
         }
 
         public override void Render()

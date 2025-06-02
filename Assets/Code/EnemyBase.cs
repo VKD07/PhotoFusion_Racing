@@ -1,4 +1,5 @@
 ﻿using Fusion;
+using NUnit.Framework;
 using UnityEngine;
 
 namespace Code
@@ -38,10 +39,17 @@ namespace Code
         {
             _currentHealth -= damage;
 
+            RPC_SendDamage(damage);
             if (_currentHealth <= 0f)
             {
                 Die();
             }
+        }
+        
+        [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+        public void RPC_SendDamage(float damage)
+        {
+            Debug.Log("Damage Taken " + damage);
         }
 
         public virtual void Die()

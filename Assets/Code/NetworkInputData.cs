@@ -18,7 +18,9 @@ namespace Code
         public float vertical;
         public const byte SPACEBUTTON = 1;
         public const byte INTERACTBUTTON = 2;
-        public const byte DROPBUTTON = 3;
+        public const byte THROWBUTTON = 3;
+        public const byte GUNBUTTON = 4;
+        
 
         public NetworkButtons buttons;
     }

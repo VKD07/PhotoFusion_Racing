@@ -11,36 +11,42 @@ namespace Code
         [SerializeField] private Collider[] _detectedTrash;
         private Vector3 _suckingPointPosition;
         private NetworkObject _suckingPointNetworkObject;
-        
+
         public NetworkObject CurrentAttachedObj { get; set; }
 
         private bool _isThrowing;
+
         public override void Spawned()
         {
             _suckingPointNetworkObject = _suckingPointOrigin.GetComponent<NetworkObject>();
         }
 
-        private void Update()
+        public override void FixedUpdateNetwork()
         {
             if (!HasInputAuthority)
             {
                 return;
             }
-
+            
             DetectTrash();
-            VacuumObjects();
+
+            if (GetInput(out NetworkInputData data))
+            {
+                VacuumObjects(data);
+            }
         }
 
         private void DetectTrash()
         {
             _detectedTrash =
-                Physics.OverlapSphere(_suckingPointOrigin.position + (_suckingPointOrigin.forward * _suckingPointDistance),
+                Physics.OverlapSphere(
+                    _suckingPointOrigin.position + (_suckingPointOrigin.forward * _suckingPointDistance),
                     _vacuumRadius);
         }
 
-        private void VacuumObjects()
+        private void VacuumObjects(NetworkInputData data)
         {
-            if (Input.GetMouseButton(0) && CurrentAttachedObj == null && !_isThrowing)
+            if (data.buttons.IsSet(NetworkInputData.GUNBUTTON) && CurrentAttachedObj == null && !_isThrowing)
             {
                 for (int i = 0; i < _detectedTrash.Length; i++)
                 {
@@ -65,20 +71,21 @@ namespace Code
                                     return;
                                 }
                             }
+
                             RPC_RequestPullForce(networkObject);
                         }
                     }
                 }
             }
-            else if (Input.GetMouseButtonUp(0) && CurrentAttachedObj != null)
+            else if (!data.buttons.IsSet(NetworkInputData.GUNBUTTON) && CurrentAttachedObj != null)
             {
                 RPC_RequestDeattach();
                 CurrentAttachedObj = null;
             }
 
-            if (Input.GetMouseButtonDown(1))
+            if (data.buttons.IsSet(NetworkInputData.THROWBUTTON) && CurrentAttachedObj != null)
             {
-                RPC_RequestThrow();  
+                RPC_RequestThrow();
                 CurrentAttachedObj = null;
             }
         }
@@ -132,7 +139,7 @@ namespace Code
                 throwable.Throw();
             }
         }
-        
+
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.green;

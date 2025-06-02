@@ -1,14 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using ExitGames.Client.Photon.StructWrapping;
 using Fusion;
 using Fusion.Sockets;
-using Unity.Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 
 namespace Code
 {
@@ -18,15 +13,15 @@ namespace Code
         [SerializeField] private NetworkPrefabRef _playerPrefab;
         [SerializeField] private PlayerInputHandler _playerInputHandler;
 
-        private readonly Dictionary<PlayerRef, NetworkObject> _spawnedCharacters =
-            new Dictionary<PlayerRef, NetworkObject>();
+        private readonly Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new();
 
         private NetworkRunner _networkRunner;
+        private NetworkObject _networkPlayerObject;
 
         private bool _spaceButton;
         private bool _interactButton;
-        private bool _dropItemButton;
-        private NetworkObject _networkPlayerObject;
+        private bool _throwButton;
+        private bool _gunButton;
         private int _joinOrder;
         private float _accumulatedPitch;
 
@@ -54,15 +49,14 @@ namespace Code
         {
             if (runner.IsServer)
             {
+                //For random spawning:
                 // Vector3 spawnPosition = new Vector3((player.RawEncoded % runner.Config.Simulation.PlayerCount) * 3, 1, 0);
                 Vector3 spawnPosition = new Vector3(_spawnTransform.position.x + _joinOrder, _spawnTransform.position.y,
                     _spawnTransform.position.z);
                 _joinOrder++;
                 _networkPlayerObject = runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
-
                 _spawnedCharacters.Add(player, _networkPlayerObject);
             }
-                        
         }
 
         public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
@@ -107,13 +101,14 @@ namespace Code
         private void Update()
         {
             _spaceButton = _spaceButton || Input.GetKey(KeyCode.Space);
-            _interactButton = _interactButton || Input.GetKeyDown(KeyCode.E);
-            _dropItemButton = _dropItemButton || Input.GetKeyDown(KeyCode.G);
+            _interactButton = _interactButton || _playerInputHandler.InteractTriggered;
+            _gunButton = _gunButton || _playerInputHandler.GunTriggered;
+            _throwButton = _throwButton || _playerInputHandler.ThrowTriggered;
         }
 
         public void OnInput(NetworkRunner runner, NetworkInput input)
         {
-            NetworkInputData _data = new NetworkInputData();
+            NetworkInputData _data = new ();
 
             // if (Input.GetKey(KeyCode.W))
             //     data.direction += Vector3.forward;
@@ -138,10 +133,13 @@ namespace Code
             
             _data.buttons.Set(NetworkInputData.INTERACTBUTTON, _interactButton);
             _interactButton = false;
-
-            _data.buttons.Set(NetworkInputData.DROPBUTTON, _dropItemButton);
-            _dropItemButton = false;
-
+            
+            _data.buttons.Set(NetworkInputData.GUNBUTTON, _gunButton);
+            _gunButton = false;
+            
+            _data.buttons.Set(NetworkInputData.THROWBUTTON, _throwButton);
+            _throwButton = false;
+            
             _data.direction = new Vector3(_playerInputHandler.MovementInput.x, 0, _playerInputHandler.MovementInput.y);
             _data.currentSpeed = CurrentSpeed;
             _data.mouseXRotation = _playerInputHandler.RotationInput.x * _mouseSensitivity;

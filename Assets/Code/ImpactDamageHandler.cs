@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using Fusion;
+using UnityEngine;
 
 namespace Code
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class ImpactDamageHandler : MonoBehaviour
+    public class ImpactDamageHandler : NetworkBehaviour
     {
         [SerializeField] private float damageMultiplier = 1f;
         private Rigidbody _rb;
@@ -21,14 +22,26 @@ namespace Code
         {
             if (!_active) return;
 
-            if (collision.transform.TryGetComponent<IDamageable>(out var damageable))
+            if (collision.transform.TryGetComponent(out NetworkObject networkObject))
+            {
+                if (networkObject.GetComponent<IDamageable>() != null)
+                {
+                    RPC_SendDamage(networkObject);
+                }
+            }
+
+            _active = false;
+        }
+
+        [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+        private void RPC_SendDamage(NetworkObject networkObject)
+        {
+            if (networkObject.TryGetComponent(out IDamageable damageable))
             {
                 float speed = _rb.linearVelocity.magnitude;
                 float damage = speed * damageMultiplier;
                 damageable.TakeDamage(damage);
             }
-
-            _active = false;
         }
     }
 }

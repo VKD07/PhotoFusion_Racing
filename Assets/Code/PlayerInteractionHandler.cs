@@ -26,14 +26,14 @@ namespace Code
                     }
                 }
 
-                if (_networkInputData.buttons.IsSet(NetworkInputData.DROPBUTTON))
-                {
-                    if (DetectedNetworkObjectOnHand != null)
-                    {
-                        RPC_UnInteract(DetectedNetworkObjectOnHand);
-                        DetectedNetworkObjectOnHand = null;
-                    }
-                }
+                // if (_networkInputData.buttons.IsSet(NetworkInputData.DROPBUTTON))
+                // {
+                //     if (DetectedNetworkObjectOnHand != null)
+                //     {
+                //         RPC_UnInteract(DetectedNetworkObjectOnHand);
+                //         DetectedNetworkObjectOnHand = null;
+                //     }
+                // }
             }
         }
 

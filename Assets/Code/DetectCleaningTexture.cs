@@ -1,4 +1,5 @@
 using System;
+using Code;
 using Fusion;
 using UnityEngine;
 
@@ -8,14 +9,17 @@ public class DetectCleaningTexture : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        if (HasInputAuthority && Input.GetMouseButton(0))
+        if (GetInput(out NetworkInputData input))
         {
-            if (Physics.Raycast(_mainCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
+            if (HasInputAuthority && input.buttons.IsSet(NetworkInputData.GUNBUTTON))
             {
-                if (hit.transform.TryGetComponent(out TextureCleaning textureCleaning))
+                if (Physics.Raycast(_mainCamera.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
                 {
-                    Vector2 textureCoord = hit.textureCoord;
-                    RPC_RequestClean(textureCleaning.Object, textureCoord);
+                    if (hit.transform.TryGetComponent(out TextureCleaning textureCleaning))
+                    {
+                        Vector2 textureCoord = hit.textureCoord;
+                        RPC_RequestClean(textureCleaning.Object, textureCoord);
+                    }
                 }
             }
         }
